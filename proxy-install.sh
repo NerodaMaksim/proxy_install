@@ -99,7 +99,7 @@ echo maxconn ${config[max_conn]}  >> 3proxy.cfg
 echo nserver 8.8.8.8 >> 3proxy.cfg
 echo nserver 8.8.4.4 >> 3proxy.cfg
 echo nserver 1.1.1.1 >> 3proxy.cfg
-echo nscache 65536 >> 3proxy.cfg
+echo nscache6 65536 >> 3proxy.cfg
 echo timeouts 1 5 30 60 180 1800 15 60 >> 3proxy.cfg
 echo setgid ${config[guid]} >> 3proxy.cfg
 echo setuid ${config[uid]} >> 3proxy.cfg
@@ -112,7 +112,7 @@ echo allow ${config[username]} >> 3proxy.cfg
 port=30000
 count=1
 for i in `cat $current_dir"/ip.list"`; do
-    echo "proxy -n -s0 -a  -6 -p$port -i${config[ipv4]} -e$i" >> 3proxy.cfg
+    echo "proxy -6 -s0 -n -a -p$port -i${config[ipv4]} -e$i" >> 3proxy.cfg
     ((port+=1))
     ((count+=1))
     if [ $count -eq 10001 ]; then
@@ -139,7 +139,7 @@ sysctl -p
 
 ip -6 addr add ${config[subnet]} dev eth0
 ip -6 route add default via ${config[getaway]}
-ip -6 route add local ${config[net_pref]}"::" dev lo
+ip -6 route add local ${config[net_pref]}"::/32" dev lo
 
 #creating service in /etc/systemd/system/3proxy.service
 cp $current_dir"/3proxy.service" /etc/systemd/system
