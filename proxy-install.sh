@@ -69,8 +69,8 @@ chown proxy3:proxy3 -R /etc/3proxy
 chown proxy3:proxy3 /usr/bin/3proxy
 chown proxy3:proxy3 /var/log/3proxy
 
-config[uid]=$(id max | grep -Po 'uid=[0-9]+' | grep -Po '[0-9]+')
-config[guid]=$(id max | grep -Po 'uid=[0-9]+' | grep -Po '[0-9]+')
+config[uid]=$(id proxy3 | grep -Po 'uid=[0-9]+' | grep -Po '[0-9]+')
+config[guid]=$(id proxy3 | grep -Po 'uid=[0-9]+' | grep -Po '[0-9]+')
 
 
 #making random_ip.sh
@@ -101,7 +101,7 @@ echo nserver 8.8.4.4 >> 3proxy.cfg
 echo nserver 1.1.1.1 >> 3proxy.cfg
 echo nscache 65536 >> 3proxy.cfg
 echo timeouts 1 5 30 60 180 1800 15 60 >> 3proxy.cfg
-echo setguid ${config[guid]} >> 3proxy.cfg
+echo setgid ${config[guid]} >> 3proxy.cfg
 echo setuid ${config[uid]} >> 3proxy.cfg
 echo stacksize 6000 >> 3proxy.cfg
 echo flush >> 3proxy.cfg
