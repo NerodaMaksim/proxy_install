@@ -139,7 +139,7 @@ sysctl -p
 
 ip -6 addr add ${config[subnet]} dev eth0
 ip -6 route add default via ${config[getaway]}
-ip -6 route add local ${config[net_pref]}"::/32" dev lo
+ip -6 route add local ${config[net]} dev lo
 
 #creating service in /etc/systemd/system/3proxy.service
 cp $current_dir"/3proxy.service" /etc/systemd/system
