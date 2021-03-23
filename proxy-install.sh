@@ -42,11 +42,11 @@ make all && make install
 echo "" > $curret_dir"ndppd.conf"
 while read LINE
 do
-	line_to_change=$(echo $LINE | grep -o '${net_}')
-	if [[ $line_to_change != "" ]]
+	line_to_change1=$(echo $LINE | grep -o '${net_}')
+	if [[ $line_to_change1 != "" ]]
 	then
 		echo "rule ${config[net]} {" >> $current_dir"/ndppd.conf"
-	else 
+	else
 		echo "$LINE" >> $current_dir"/ndppd.conf"
 	fi
 done < $current_dir"/ndppd_templ.conf"
@@ -77,10 +77,14 @@ config[guid]=$(id proxy3 | grep -Po 'uid=[0-9]+' | grep -Po '[0-9]+')
 echo "" > $current_dir"/random_ip.sh"
 while read LINE; do
 	line_to_change=$(echo $LINE | grep -o '{$net_pr}')
+	line_to_change2=$(echo $LINE | grep -o '${amount}')
         if [[ $line_to_change != "" ]]
         then
                 echo "network="${config[net_pr]} >> $current_dir"/random_ip.sh"
-        else
+	elif [[ $line_to_change2 != "" ]]
+	then
+		echo "MAXCOUNT="${config[max_conn]} >> $current_dir"/random_ip.sh"
+	else
                 echo "$LINE" >> $current_dir"/random_ip.sh"
         fi
 done < $current_dir"/random_ip_templ.sh"
