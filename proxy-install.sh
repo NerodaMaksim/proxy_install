@@ -39,7 +39,7 @@ make all && make install
 
 
 #making ndppd.conf
-touch $curret_dir"ndppd.conf"
+echo "" > $curret_dir"ndppd.conf"
 while read LINE
 do
 	line_to_change=$(echo $LINE | grep -o '${net_}')
@@ -74,7 +74,7 @@ config[guid]=$(id proxy3 | grep -Po 'uid=[0-9]+' | grep -Po '[0-9]+')
 
 
 #making random_ip.sh
-touch $current_dir"/random_ip.sh"
+echo "" > $current_dir"/random_ip.sh"
 while read LINE; do
 	line_to_change=$(echo $LINE | grep -o '{$net_pr}')
         if [[ $line_to_change != "" ]]
@@ -92,7 +92,7 @@ $current_dir"/random_ip.sh" > $current_dir"/ip.list"
 
 #mv ./3proxy.sh ./3proxy_teml.sh
 #making 3proxy.sh
-touch 3proxy.cfg
+echo "" > 3proxy.cfg
 echo daemon >> 3proxy.cfg
 echo log /var/log/3proxy/3proxy.log >> 3proxy.cfg
 echo maxconn ${config[max_conn]}  >> 3proxy.cfg
