@@ -8,9 +8,9 @@
 
 
 array=( 1 2 3 4 5 6 7 8 9 0 a b c d e f )
-MAXCOUNT=1000
+MAXCOUNT={amount}
 count=1
-network={$net_pr} # your ipv6 network prefix
+network={net_pr} # your ipv6 network prefix
 
 
 rnd_ip_block ()

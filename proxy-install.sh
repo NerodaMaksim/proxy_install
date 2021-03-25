@@ -5,16 +5,16 @@ current_dir=$(pwd)
 
 typeset -A config
 config=(
-	[net]='localhost'
-	[net_pr]='localhost'
-	[max_conn]='1000'
-	[username]='username'
-	[password]='pass'
-	[ipv4]='localhost'
-	[uid]='0'
-	[guid]='0'
-	[subnet]='localhost'
-	[getaway]='127.0.0.1'
+        [net]='localhost'
+        [net_pr]='localhost'
+        [max_conn]='1000'
+        [username]='username'
+        [password]='pass'
+        [ipv4]='localhost'
+        [uid]='0'
+        [guid]='0'
+        [subnet]='localhost'
+        [getaway]='127.0.0.1'
 )
 
 while read line
@@ -39,16 +39,19 @@ make all && make install
 
 
 #making ndppd.conf
-echo "" > $curret_dir"ndppd.conf"
+cat /dev/null > $curret_dir"/ndppd.conf"
+FLAG=""
 while read LINE
 do
-	line_to_change1=$(echo $LINE | grep -o '${net_}')
-	if [[ $line_to_change1 != "" ]]
-	then
-		echo "rule ${config[net]} {" >> $current_dir"/ndppd.conf"
-	else
-		echo "$LINE" >> $current_dir"/ndppd.conf"
-	fi
+        line_to_change1=$(echo $LINE | grep -o '{net_}')
+        if ! [ -z $line_to_change1 ] && [ -z $FLAG ]
+        then
+                echo "rule ${config[net]} {" >> $current_dir"/ndppd.conf"
+                FLAG="43534534"
+
+        else
+                echo "$LINE" >> $current_dir"/ndppd.conf"
+        fi
 done < $current_dir"/ndppd_templ.conf"
 #end
 
@@ -74,17 +77,22 @@ config[guid]=$(id proxy3 | grep -Po 'uid=[0-9]+' | grep -Po '[0-9]+')
 
 
 #making random_ip.sh
-echo "" > $current_dir"/random_ip.sh"
-while read LINE; do
-	line_to_change=$(echo $LINE | grep -o '{$net_pr}')
-	line_to_change2=$(echo $LINE | grep -o '${amount}')
-        if [[ $line_to_change != "" ]]
+cat /dev/null > $current_dir"/random_ip.sh"
+FLAG1=""
+FLAG2=""
+while read LINE
+do
+        line_to_change=$(echo $LINE | grep -o '{net_pr}')
+        line_to_change2=$(echo $LINE | grep -o '{amount}')
+        if ! [ -z $line_to_change ] && [ -z $FLAG1  ]
         then
                 echo "network="${config[net_pr]} >> $current_dir"/random_ip.sh"
-	elif [[ $line_to_change2 != "" ]]
-	then
-		echo "MAXCOUNT="${config[max_conn]} >> $current_dir"/random_ip.sh"
-	else
+                FLAG1="123123"
+        elif ! [ -z $line_to_change2 ] && [ -z $FLAG2 ]
+        then
+                echo "MAXCOUNT="${config[max_conn]} >> $current_dir"/random_ip.sh"
+                FLAG2="123123"
+        else
                 echo "$LINE" >> $current_dir"/random_ip.sh"
         fi
 done < $current_dir"/random_ip_templ.sh"
@@ -96,7 +104,7 @@ $current_dir"/random_ip.sh" > $current_dir"/ip.list"
 
 #mv ./3proxy.sh ./3proxy_teml.sh
 #making 3proxy.sh
-echo "" > 3proxy.cfg
+cat /dev/null> 3proxy.cfg
 echo daemon >> 3proxy.cfg
 echo log /var/log/3proxy/3proxy.log >> 3proxy.cfg
 echo maxconn ${config[max_conn]}  >> 3proxy.cfg
@@ -130,17 +138,20 @@ done
 cp 3proxy.cfg /etc/3proxy/3proxy.cfg
 
 #editing /etc/sysctl.conf
-echo "net.ipv6.conf.eth0.proxy_ndp=1" >> /etc/sysctl.conf
-echo "net.ipv6.conf.all.proxy_ndp=1" >> /etc/sysctl.conf
-echo "net.ipv6.conf.default.forwarding=1" >> /etc/sysctl.conf
-echo "net.ipv6.conf.all.forwarding=1" >> /etc/sysctl.conf
-echo "net.ipv6.ip_nonlocal_bind=1" >> /etc/sysctl.conf
+
+IS_FILE_MODIFIED=$(tail -n 5 /etc/sysctl.conf | grep -e 'net.ipv6.conf.eth0.proxy_ndp=1' -e 'net.ipv6.conf.all.proxy_ndp=1' -e 'net.ipv6.conf.default.forwarding=1' -e 'net.ipv6.conf.all.forwarding=1' -e 'net.ipv6.ip_nonlocal_bind=1')
+
+if [[ -z "$IS_FILE_MODIFIED" ]]
+then
+        echo "net.ipv6.conf.eth0.proxy_ndp=1" >> /etc/sysctl.conf
+        echo "net.ipv6.conf.all.proxy_ndp=1" >> /etc/sysctl.conf
+        echo "net.ipv6.conf.default.forwarding=1" >> /etc/sysctl.conf
+        echo "net.ipv6.conf.all.forwarding=1" >> /etc/sysctl.conf
+        echo "net.ipv6.ip_nonlocal_bind=1" >> /etc/sysctl.conf
+        sysctl -p
+fi
+
 #end
-
-sysctl -p
-
-
-
 ip -6 addr add ${config[subnet]} dev eth0
 ip -6 route add default via ${config[getaway]}
 ip -6 route add local ${config[net]} dev lo
@@ -152,3 +163,4 @@ cp $current_dir"/3proxy.service" /etc/systemd/system
 systemctl daemon-reload
 systemctl enable 3proxy
 systemctl start 3proxy
+
