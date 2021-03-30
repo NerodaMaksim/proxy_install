@@ -39,7 +39,7 @@ make all && make install
 
 
 #making ndppd.conf
-cat /dev/null > $curret_dir"/ndppd.conf"
+cat /dev/null > $current_dir"/ndppd.conf"
 FLAG=""
 while read LINE
 do
@@ -152,7 +152,9 @@ then
 fi
 
 #end
-ip -6 addr add ${config[subnet]} dev eth0
+for i in `cat $current_dir"/ip.list"`; do
+        ip -6 addr add $i dev eth0
+done
 ip -6 route add default via ${config[getaway]}
 ip -6 route add local ${config[net]} dev lo
 
@@ -160,7 +162,26 @@ ip -6 route add local ${config[net]} dev lo
 cp $current_dir"/3proxy.service" /etc/systemd/system
 #end
 
+#creating autostart in /etc/rc.local
+cat /dev/null> /etc/rc.local
+echo "#!/bin/bash"
+echo ulimit -n 600000 >> /etc/rc.local
+echo ulimit -u 600000 >> /etc/rc.local
+echo ulimit -i 20000 >> /etc/rc.local
+for i in `cat $current_dir"/ip.list"`; do
+    echo "/sbin/ip -6 addr add $i dev eth0" >> /etc/rc.local
+done
+echo "ip -6 route add default via ${config[getaway]}" >> /etc/rc.local
+echo "ip -6 route add local ${config[net]} dev lo" >> /etc/rc.local
+
+echo "/root/ndppd/ndppd -d -c $current_dir/ndppd.conf" >> /etc/rc.local
+echo "exit 0" >> /etc/rc.local
+#
+
+
+
+
 systemctl daemon-reload
 systemctl enable 3proxy
 systemctl start 3proxy
-
+systemctl restart 3proxy
