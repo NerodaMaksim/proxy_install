@@ -106,7 +106,8 @@ $current_dir"/random_ip.sh" > $current_dir"/ip.list"
 #making 3proxy.sh
 cat /dev/null> 3proxy.cfg
 echo daemon >> 3proxy.cfg
-echo log /var/log/3proxy/3proxy.log >> 3proxy.cfg
+echo log /var/log/3proxy/3proxy.log D >> 3proxy.cfg
+echo rotate 100 >> 3proxy.cfg
 echo maxconn ${config[max_conn]}  >> 3proxy.cfg
 echo nserver 8.8.8.8 >> 3proxy.cfg
 echo nserver 8.8.4.4 >> 3proxy.cfg
@@ -165,6 +166,7 @@ cp $current_dir"/3proxy.service" /etc/systemd/system
 #creating autostart in /etc/rc.local
 cat /dev/null> /etc/rc.local
 echo "#!/bin/bash"
+echo "/sbin/shutdown -r 03:00"
 echo ulimit -n 600000 >> /etc/rc.local
 echo ulimit -u 600000 >> /etc/rc.local
 echo ulimit -i 20000 >> /etc/rc.local
