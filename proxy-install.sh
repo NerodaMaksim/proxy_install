@@ -156,6 +156,7 @@ fi
 for i in `cat $current_dir"/ip.list"`; do
         ip -6 addr add $i dev eth0
 done
+ip -6 addr add ${config[subnet]} dev eth0
 ip -6 route add default via ${config[getaway]}
 ip -6 route add local ${config[net]} dev lo
 
@@ -173,8 +174,9 @@ echo ulimit -i 20000 >> /etc/rc.local
 for i in `cat $current_dir"/ip.list"`; do
     echo "/sbin/ip -6 addr add $i dev eth0" >> /etc/rc.local
 done
-echo "ip -6 route add default via ${config[getaway]}" >> /etc/rc.local
-echo "ip -6 route add local ${config[net]} dev lo" >> /etc/rc.local
+echo "/sbin/ip -6 addr add ${config[subnet]} dev eth0" >> /etc/rc.local
+echo "/sbin/ip -6 route add default via ${config[getaway]}" >> /etc/rc.local
+echo "/sbin/ip -6 route add local ${config[net]} dev lo" >> /etc/rc.local
 
 echo "/root/ndppd/ndppd -d -c $current_dir/ndppd.conf" >> /etc/rc.local
 echo "exit 0" >> /etc/rc.local
