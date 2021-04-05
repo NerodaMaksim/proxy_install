@@ -180,7 +180,10 @@ echo "/sbin/ip -6 route add local ${config[net]} dev lo" >> /etc/rc.local
 
 echo "/root/ndppd/ndppd -d -c $current_dir/ndppd.conf" >> /etc/rc.local
 echo "exit 0" >> /etc/rc.local
+
+chmod +x /etc/rc.local
 #
+
 
 
 
