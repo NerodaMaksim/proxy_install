@@ -172,7 +172,7 @@ echo ulimit -n 600000 >> /etc/rc.local
 echo ulimit -u 600000 >> /etc/rc.local
 echo ulimit -i 20000 >> /etc/rc.local
 for i in `cat $current_dir"/ip.list"`; do
-    echo "/sbin/ip -6 addr add $i dev eth0" >> /etc/rc.local
+    echo "/sbin/ip -6 addr add $i/32 dev eth0" >> /etc/rc.local
 done
 echo "/sbin/ip -6 addr add ${config[subnet]} dev eth0" >> /etc/rc.local
 echo "/sbin/ip -6 route add default via ${config[getaway]}" >> /etc/rc.local
